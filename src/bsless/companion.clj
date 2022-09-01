@@ -11,24 +11,31 @@
   (instance? IMeta c))
 
 (defn as-component
+  {:arglists
+   '([{:keys [init start stop]
+      :or {stop identity
+           init {}}}]
+     [start])}
   "Taking a function `start`, and optionally an initial value `init` and
   function `stop`, returns a map or `init` which behaves like a
   component with `start` and `stop`."
-  ([{:keys [init start stop]
-     :or {stop identity
-          init {}}}]
-   (assert (imeta? init) "Component wrapper must be an IMeta")
-   (with-meta
-     (or init {})
-     {'com.stuartsierra.component/start
-      (fn -start [this]
-        (let [ret (start this)]
-          (cond-> ret
-            (imeta? ret)
-            (with-meta
-              {'com.stuartsierra.component/stop
-               (fn -stop [this]
-                 (stop this))}))))})))
+  ([spec]
+   (let [[{:keys [init start stop]
+           :or {stop identity
+                init {}}}]
+         (cond (map? spec) spec (fn? spec) {:start spec})]
+     (assert (imeta? init) "Component wrapper must be an IMeta")
+     (with-meta
+       (or init {})
+       {'com.stuartsierra.component/start
+        (fn -start [this]
+          (let [ret (start this)]
+            (cond-> ret
+              (imeta? ret)
+              (with-meta
+                {'com.stuartsierra.component/stop
+                 (fn -stop [this]
+                   (stop this))}))))}))))
 
 (comment
   (-> {:init {}
