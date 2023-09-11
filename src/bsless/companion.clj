@@ -11,18 +11,18 @@
   (instance? IMeta c))
 
 (defn as-component
-  {:arglists
-   '([{:keys [init start stop]
-      :or {stop identity
-           init {}}}]
-     [start])}
   "Taking a function `start`, and optionally an initial value `init` and
   function `stop`, returns a map or `init` which behaves like a
   component with `start` and `stop`."
+  {:arglists
+   '([{:keys [init start stop]
+       :or {stop identity
+            init {}}}]
+     [start])}
   ([spec]
-   (let [[{:keys [init start stop]
-           :or {stop identity
-                init {}}}]
+   (let [{:keys [init start stop]
+          :or {stop identity
+               init {}}}
          (cond (map? spec) spec (fn? spec) {:start spec})]
      (assert (imeta? init) "Component wrapper must be an IMeta")
      (with-meta
@@ -82,6 +82,7 @@
   [{:keys [start stop step get]
     :or {start (fn [& args] args)
          stop identity
+         step identity
          get identity}
     :as opts}]
   (assert (ifn? start))
