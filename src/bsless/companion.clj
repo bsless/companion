@@ -1,5 +1,6 @@
 (ns bsless.companion
   (:require
+   [clojure.pprint :refer [simple-dispatch]]
    [com.stuartsierra.component
     :as component
     :refer [start stop Lifecycle map->SystemMap system-map using]])
@@ -47,6 +48,11 @@
 
 (prefer-method print-method java.util.Map clojure.lang.IDeref)
 (prefer-method print-method clojure.lang.IRecord clojure.lang.IDeref)
+(prefer-method print-dup java.util.Map clojure.lang.IDeref)
+(prefer-method print-dup clojure.lang.IRecord clojure.lang.IDeref)
+(prefer-method simple-dispatch java.util.Map clojure.lang.IDeref)
+(prefer-method simple-dispatch clojure.lang.IRecord clojure.lang.IDeref)
+(prefer-method simple-dispatch clojure.lang.IPersistentMap clojure.lang.IDeref)
 
 (defrecord StateComponent [__state __step __start __stop __get]
   Lifecycle
